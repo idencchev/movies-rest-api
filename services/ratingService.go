@@ -1,9 +1,9 @@
 package services
 
-import (
-	"movies-rest-api/middlewares"
-)
+// import (
+// 	"movies-rest-api/middlewares"
+// )
 
-func init() {
-	middlewares.ConnectionWithMongoDB("ratings")
-}
+// // func init() {
+// // 	middlewares.ConnectionWithMongoDB("ratings")
+// // }
