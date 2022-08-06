@@ -2,10 +2,8 @@ package services
 
 import (
 	"encoding/json"
-
 	"log"
 	"net/http"
-
 	"time"
 
 	"movies-rest-api/Models"
@@ -72,23 +70,29 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("x-auth-token")
-
-	if err != nil {
-		if err == http.ErrNoCookie {
-			// If the cookie is not set, return an unauthorized status
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-
-		// For any other type of error, return a bad request status
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	http.SetCookie(w, &http.Cookie{
 		Name:   "x-auth-token",
 		Path:   "/",
 		MaxAge: -1,
 	})
+}
+
+func Verify(w http.ResponseWriter, r *http.Request) {
+	_, err := r.Cookie("x-auth-token")
+
+	if err != nil {
+		if err == http.ErrNoCookie {
+			// If the cookie is not set, return an unauthorized status
+			json.NewEncoder(w).Encode(false)
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+
+		// For any other type of error, return a bad request status
+		json.NewEncoder(w).Encode(false)
+		w.WriteHeader(http.StatusBadRequest)
+		return 
+	}
+	json.NewEncoder(w).Encode(true)
+	return
 }

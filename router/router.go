@@ -16,6 +16,7 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/auth/login", services.UserLogin).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/auth/register", services.UserSignup).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/auth/logout", services.Logout).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/auth/verify", services.Verify).Methods("GET", "OPTIONS")
 
 	return router
 }
