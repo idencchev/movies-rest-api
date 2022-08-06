@@ -14,23 +14,21 @@ import (
 )
 
 func UserSignup(w http.ResponseWriter, r *http.Request) {
-	var client, ctx, _ = middlewares.ConnectionWithMongoDB()
+	var collection, ctx, _ = middlewares.ConnectionWithMongoDB("users")
 	
 	w.Header().Set("Content-Type", "application/json")
 
 	var user models.UserSchema
-
 	json.NewDecoder(r.Body).Decode(&user)
 
 	user.Password = utils.GetHash([]byte(user.Password))
-	collection := client.Database("movies").Collection("users")
 	result, _ := collection.InsertOne(ctx, user)
 
 	json.NewEncoder(w).Encode(result)
 }
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
-	var client, ctx, err = middlewares.ConnectionWithMongoDB()
+	var collection, ctx, err = middlewares.ConnectionWithMongoDB("users")
 	
 	w.Header().Set("Content-Type", "application/json")
 
@@ -38,8 +36,6 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	var dbUser models.UserSchema
 
 	json.NewDecoder(r.Body).Decode(&user)
-
-	collection := client.Database("movies").Collection("users")
 	err = collection.FindOne(ctx, bson.M{"username": user.Username}).Decode(&dbUser)
 
 	if err != nil {
