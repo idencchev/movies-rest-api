@@ -2,9 +2,12 @@ package services
 
 import (
 	"encoding/json"
+
 	"log"
 	"net/http"
-	
+
+	"time"
+
 	"movies-rest-api/Models"
 	"movies-rest-api/middlewares"
 	"movies-rest-api/utils"
@@ -15,7 +18,7 @@ import (
 
 func UserSignup(w http.ResponseWriter, r *http.Request) {
 	var collection, ctx, _ = middlewares.ConnectionWithMongoDB("users")
-	
+
 	w.Header().Set("Content-Type", "application/json")
 
 	var user models.UserSchema
@@ -29,7 +32,7 @@ func UserSignup(w http.ResponseWriter, r *http.Request) {
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
 	var collection, ctx, err = middlewares.ConnectionWithMongoDB("users")
-	
+
 	w.Header().Set("Content-Type", "application/json")
 
 	var user models.UserSchema
@@ -61,6 +64,9 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(`{"message":"` + err.Error() + `"}`))
 		return
 	}
+
+	cookie := http.Cookie{Name: "x-auth-token", Value: jwtToken, Path: "/", Expires: time.Now().Add(2 * 24 * time.Hour), HttpOnly: true}
+	http.SetCookie(w, &cookie)
 
 	w.Write([]byte(`{"token":"` + jwtToken + `"}`))
 }
