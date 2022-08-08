@@ -51,7 +51,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 
 	if passErr != nil {
 		log.Println(passErr)
-		w.Write([]byte(`{"response":"Wrong Password!"}`))
+		w.Write([]byte(`{"message":"Wrong Password!"}`))
 		return
 	}
 

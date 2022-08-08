@@ -7,9 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi"
 )
 
 var movies []interface{}
@@ -36,10 +35,9 @@ var movieByTitle interface{}
 func SearchMovies(w http.ResponseWriter, r *http.Request) {
 	var url string
 
-	query := strings.Split(r.URL.RawQuery, "=")
-
-	if query[0] == "movie" {
-		url = fmt.Sprintf("https://api.tvmaze.com/search/shows?q=%s", query[1])
+	if r.URL.Query().Get("movie") != "" {
+		fmt.Println("movie = " + r.URL.Query().Get("movie"))
+		url = fmt.Sprintf("https://api.tvmaze.com/search/shows?q=%s", r.URL.Query().Get("movie"))
 		response, err := http.Get(url)
 		if err != nil {
 			fmt.Print(err.Error())
@@ -52,8 +50,9 @@ func SearchMovies(w http.ResponseWriter, r *http.Request) {
 		json.Unmarshal(responseData, &movies)
 		json.NewEncoder(w).Encode(movies)
 		return
-	} else if query[0] == "title" {
-		url = fmt.Sprintf("https://api.tvmaze.com/singlesearch/shows?q=%s", query[1])
+	} else if r.URL.Query().Get("title") != "" {
+		fmt.Println("title = " + r.URL.Query().Get("title"))
+		url = fmt.Sprintf("https://api.tvmaze.com/singlesearch/shows?q=%s", r.URL.Query().Get("title"))
 
 		response, err := http.Get(url)
 
@@ -70,7 +69,7 @@ func SearchMovies(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(movieByTitle)
 		return
 	} else {
-		fmt.Println("Unexpected URL query!")
+		json.NewEncoder(w).Encode("Unexpected URL query!")
 		return
 	}
 }
@@ -78,11 +77,7 @@ func SearchMovies(w http.ResponseWriter, r *http.Request) {
 var moviesById interface{}
 
 func GetMovieByID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, ok := vars["id"]
-	if !ok {
-		fmt.Println("id is missing in parameters")
-	}
+	id := chi.URLParam(r, "id")
 
 	url := fmt.Sprintf("https://api.tvmaze.com/shows/%s", id)
 	response, err := http.Get(url)
