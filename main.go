@@ -3,9 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
-
 	"movies-rest-api/router"
+	"net/http"
 )
 
 func main() {

@@ -3,20 +3,32 @@ package router
 import (
 	"movies-rest-api/services"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
-func Router() *mux.Router {
-	router := mux.NewRouter()
+func Router() *chi.Mux {
+	router := chi.NewRouter()
 
-	router.HandleFunc("/api/movies", services.GetAllMovies).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/movies/{id}", services.GetMovieByID).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/movies/search", services.SearchMovies).Methods("GET", "OPTIONS")
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
 
-	router.HandleFunc("/api/auth/login", services.UserLogin).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/auth/register", services.UserSignup).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/auth/logout", services.Logout).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/auth/verify", services.Verify).Methods("GET", "OPTIONS")
+	router.Route("/api", func(r chi.Router) {
 
+		r.Route("/movies", func(r chi.Router) {
+			r.Get("/", services.GetAllMovies)
+			r.Get("/{id}", services.GetMovieByID)
+			r.Get("/search", services.SearchMovies)
+		})
+		
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/login", services.UserLogin)
+			r.Post("/register", services.UserSignup)
+			r.Post("/logout", services.Logout)
+			r.Post("/verify", services.Verify)
+		})
+	})
 	return router
 }
