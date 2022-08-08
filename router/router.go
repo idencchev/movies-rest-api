@@ -5,11 +5,13 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/rs/cors"
 )
 
 func Router() *chi.Mux {
 	router := chi.NewRouter()
 
+	router.Use(cors.AllowAll().Handler)
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	router.Use(middleware.Logger)
@@ -22,7 +24,7 @@ func Router() *chi.Mux {
 			r.Get("/{id}", services.GetMovieByID)
 			r.Get("/search", services.SearchMovies)
 		})
-		
+
 		r.Route("/auth", func(r chi.Router) {
 			r.Post("/login", services.UserLogin)
 			r.Post("/register", services.UserSignup)
