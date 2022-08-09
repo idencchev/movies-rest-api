@@ -16,9 +16,10 @@ func Auth(next http.Handler) http.Handler {
 		tokenFromCookie, err := r.Cookie("x-auth-token")
 
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Println(err)
 			services.Logout(w, r)
-			w.Write([]byte("Malformed Token"))
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("Unauthorized"))
 		} else {
 
 			jwtToken := tokenFromCookie.Value
