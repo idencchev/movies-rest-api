@@ -1,19 +1,16 @@
 package utils
 
 import (
-	"log"
-
-	"github.com/dgrijalva/jwt-go"
+	"github.com/go-chi/jwtauth"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var SECRET_KEY = []byte("gosecretkey")
 
-func GenerateJWT() (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
-	tokenString, err := token.SignedString(SECRET_KEY)
-	if err != nil {
-		log.Println("Error in JWT token generation")
-		return "", err
-	}
-	return tokenString, nil
+var tokenAuth *jwtauth.JWTAuth
+
+func GenerateJWT(userId primitive.ObjectID, username string) (string, error) {
+	tokenAuth = jwtauth.New("HS256", []byte(SECRET_KEY), nil)
+	_, tokenString, err := tokenAuth.Encode(map[string]interface{}{"user_id": userId, "username": username})
+	return tokenString, err
 }

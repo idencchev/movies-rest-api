@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"movies-rest-api/Models"
-	"movies-rest-api/middlewares"
 	"movies-rest-api/utils"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,7 +14,7 @@ import (
 )
 
 func UserSignup(w http.ResponseWriter, r *http.Request) {
-	var collection, ctx, _ = middlewares.ConnectionWithMongoDB("users")
+	var collection, ctx, _ = utils.ConnectionWithMongoDB("users")
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -29,7 +28,7 @@ func UserSignup(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
-	var collection, ctx, err = middlewares.ConnectionWithMongoDB("users")
+	var collection, ctx, err = utils.ConnectionWithMongoDB("users")
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -55,7 +54,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jwtToken, err := utils.GenerateJWT()
+	jwtToken, err := utils.GenerateJWT(dbUser.ID, dbUser.Username)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

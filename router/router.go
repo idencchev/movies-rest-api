@@ -1,6 +1,7 @@
 package router
 
 import (
+	"movies-rest-api/middlewares"
 	"movies-rest-api/services"
 
 	"github.com/go-chi/chi"
@@ -20,6 +21,7 @@ func Router() *chi.Mux {
 	router.Route("/api", func(r chi.Router) {
 
 		r.Route("/movies", func(r chi.Router) {
+			r.Use(middlewares.Auth)
 			r.Get("/", services.GetAllMovies)
 			r.Get("/{id}", services.GetMovieByID)
 			r.Get("/search", services.SearchMovies)
@@ -28,8 +30,12 @@ func Router() *chi.Mux {
 		r.Route("/auth", func(r chi.Router) {
 			r.Post("/login", services.UserLogin)
 			r.Post("/register", services.UserSignup)
-			r.Post("/logout", services.Logout)
-			r.Post("/verify", services.Verify)
+			
+			r.Route("/", func(r chi.Router) {
+				r.Use(middlewares.Auth)
+				r.Post("/logout", services.Logout)
+				r.Post("/verify", services.Verify)
+			})
 		})
 	})
 	return router
