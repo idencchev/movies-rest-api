@@ -37,6 +37,12 @@ func Router() *chi.Mux {
 				r.Post("/verify", services.Verify)
 			})
 		})
+
+		r.Route("/rating", func(r chi.Router) {
+			r.Use(middlewares.Auth)
+			r.Get("/{movieId}/{userId}", services.GetMovieRating)
+			r.Post("/", services.AddMovieRating)
+		})
 	})
 	return router
 }
