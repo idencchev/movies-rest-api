@@ -62,16 +62,15 @@ func GetMovieRating(w http.ResponseWriter, r *http.Request) {
 
 	movieId := chi.URLParam(r, "movieId")
 	userIdString := chi.URLParam(r, "userId")
-
+	
 	userId, err := primitive.ObjectIDFromHex(userIdString)
-	if err == nil {
+	if err != nil {
 		panic(err)
 	}
 
 	filter := bson.M{"movieId": movieId, "userId": userId}
-
 	result, err := collection.Find(ctx, filter)
-	if err == nil {
+	if err != nil {
 		w.Write([]byte(`{"message":"` + err.Error() + ` and"}`))
 		json.NewEncoder(w).Encode("This item does not exist.")
 		return
@@ -81,5 +80,5 @@ func GetMovieRating(w http.ResponseWriter, r *http.Request) {
 	if err = result.All(ctx, &results); err != nil {
 		w.Write([]byte(`{"message":"` + err.Error() + ` and"}`))
 	}
-	json.NewEncoder(w).Encode(results[0])
+	json.NewEncoder(w).Encode(results)
 }
