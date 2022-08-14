@@ -48,7 +48,7 @@ func Router() *chi.Mux {
 			r.Use(middlewares.Auth)
 			r.Post("/", services.CreateNote)
 			r.Get("/{movieId}", services.GetNoteByMovieId)
-			r.Post("/{id}", services.DeleteNote)
+			r.Delete("/{id}", services.DeleteNote)
 		})
 	})
 	return router
