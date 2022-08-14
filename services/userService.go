@@ -22,7 +22,7 @@ func UserSignup(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&user)
 
 	user.Password = utils.GetHash([]byte(user.Password))
-	result, _ := collection.InsertOne(ctx, user)
+	result, _ := collection.InsertOne(ctx, bson.M{"username": user.Username, "password": user.Password})
 
 	json.NewEncoder(w).Encode(result)
 }
@@ -90,7 +90,7 @@ func Verify(w http.ResponseWriter, r *http.Request) {
 		// For any other type of error, return a bad request status
 		json.NewEncoder(w).Encode(false)
 		w.WriteHeader(http.StatusBadRequest)
-		return 
+		return
 	}
 	json.NewEncoder(w).Encode(true)
 	return
