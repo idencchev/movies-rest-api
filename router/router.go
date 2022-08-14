@@ -43,6 +43,13 @@ func Router() *chi.Mux {
 			r.Get("/{movieId}/{userId}", services.GetMovieRating)
 			r.Post("/", services.AddMovieRating)
 		})
+
+		r.Route("/notes", func(r chi.Router) {
+			r.Use(middlewares.Auth)
+			r.Post("/", services.CreateNote)
+			r.Get("/{movieId}", services.GetNoteByMovieId)
+			r.Post("/{id}", services.DeleteNote)
+		})
 	})
 	return router
 }
